@@ -1,5 +1,5 @@
 <template>
-  <div class="home" style="min-height: 100%">
+  <div class="home">
     <el-container style="min-height: 100vh">
       <!-- 左侧菜单 -->
       <el-aside
@@ -18,6 +18,7 @@
           active-text-color="#ffd04b"
           :collapse-transition="false"
           class="el-menu-vertical-demo"
+          router
         >
           <h3
             style="
@@ -47,10 +48,10 @@
             </template>
             <el-menu-item-group>
               <template slot="title">管理项</template>
-              <el-menu-item index="1-1">用户管理</el-menu-item>
-              <el-menu-item index="1-2">组织管理</el-menu-item>
-              <el-menu-item index="1-3">角色管理</el-menu-item>
-              <el-menu-item index="1-4">菜单管理</el-menu-item>
+              <el-menu-item index="/user">用户管理</el-menu-item>
+              <el-menu-item index="/dept">组织管理</el-menu-item>
+              <el-menu-item index="/role">角色管理</el-menu-item>
+              <el-menu-item index="/menu">菜单管理</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
         </el-menu>
@@ -88,30 +89,15 @@
             <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
             <el-breadcrumb-item><a href="/">用户管理</a></el-breadcrumb-item>
           </el-breadcrumb>
-          <!-- 搜索框 -->
-          <div style="margin: 10px 0" id="homeSearch">
-            <el-input
-              suffix-icon="el-icon-search"
-              style="width: 200px"
-              placeholder="请输入名称"
-            ></el-input>
-            <el-input
-              suffix-icon="el-icon-message"
-              style="width: 200px; margin-left: 5px"
-              placeholder="请输入邮箱"
-            ></el-input>
-            <el-input
-              suffix-icon="el-icon-place"
-              style="width: 200px; margin-left: 5px"
-              placeholder="请输入地址"
-            ></el-input>
-            <el-button style="margin-left: 5px" type="primary">搜索</el-button>
-          </div>
           <!-- 按钮组 -->
           <div style="margin: 10px 0" id="homeBtnAdd">
-            <el-button type="primary">
+            <el-button type="primary" @click="drawer = true">
               新增
               <i class="el-icon-circle-plus-outline"></i>
+            </el-button>
+            <el-button type="success" @click="refresh">
+              刷新
+              <!-- <i class="el-icon-circle-plus-outline"></i> -->
             </el-button>
             <el-button type="danger">
               批量删除
@@ -129,29 +115,75 @@
           <!-- 内容 -->
           <el-table
             :data="tableData"
-            border="true"
-            stripe="true"
+            border
+            stripe
             style="border-radius: 10px"
             id="homeContent"
           >
-            <el-table-column prop="date" label="日期" width="140">
+            <el-table-column prop="id" label="编号" width="140" fixed>
             </el-table-column>
-            <el-table-column prop="name" label="姓名" width="120">
+            <el-table-column prop="username" label="用户名称" width="150">
             </el-table-column>
-            <el-table-column prop="address" label="地址"> </el-table-column>
+            <el-table-column prop="password" label="口令" width="150">
+            </el-table-column>
+            <el-table-column prop="roleId" label="角色编号" width="150">
+            </el-table-column>
+            <el-table-column prop="deptId" label="部门编号" width="150">
+            </el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
-                <el-button type="success"
+                <el-button
+                  type="success"
+                  @click="edit(scope.row)"
+                  style="margin-right: 10px"
                   >编辑 <i class="el-icon-edit-outline"></i
                 ></el-button>
-                <el-button type="danger"
-                  >删除 <i class="el-icon-remove-outline"></i
-                ></el-button>
+                <template>
+                  <el-popconfirm
+                    title="确认删除吗？"
+                    @confirm="deleteOne(scope.row)"
+                    @cancel="cancel"
+                  >
+                    <el-button type="danger" slot="reference"
+                      >删除 <i class="el-icon-remove-outline"></i
+                    ></el-button>
+                  </el-popconfirm>
+                </template>
               </template>
             </el-table-column>
           </el-table>
+          <!-- 新增抽屉 -->
+          <el-drawer
+            title="新增用户"
+            :visible.sync="drawer"
+            :with-header="true"
+          >
+            <el-form
+              ref="form"
+              :model="form"
+              label-width="80px"
+              class="addUserForm"
+            >
+              <el-form-item label="用户名">
+                <el-input v-model="form.username"></el-input>
+              </el-form-item>
+              <el-form-item label="密码">
+                <el-input v-model="form.password"></el-input>
+              </el-form-item>
+              <el-form-item label="角色编号">
+                <el-input v-model="form.roleId"></el-input>
+              </el-form-item>
+              <el-form-item label="部门编号">
+                <el-input v-model="form.deptId"></el-input>
+              </el-form-item>
+              <div class="buttonGroup">
+                <el-button type="primary" @click="submit">确认</el-button>
+                <el-button @click="cancel">取消</el-button>
+              </div>
+            </el-form>
+          </el-drawer>
           <!-- 分页栏 -->
-          <div style="padding: 10px 0" id="homePagi">
+          <div style="padding: 10px 0" id="homePage">
             <el-pagination
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
@@ -173,19 +205,21 @@
 export default {
   name: "Manage",
   data() {
-    const item = {
-      date: "2016-05-02",
-      name: "王小虎",
-      address: "上海市普陀区金沙江路 1518 弄",
-    };
     return {
-      tableData: Array(10).fill(item),
+      tableData: [],
       isCollapse: false,
       sideWidth: 250,
       collapseBtnClass: "el-icon-s-fold",
       logoSrc: require("/public/logo.png"),
       collapseLogo: "",
       currentPage: 1,
+      drawer: false,
+      form: {
+        username: "",
+        password: "",
+        roleId: "",
+        deptId: "",
+      },
     };
   },
   methods: {
@@ -206,6 +240,72 @@ export default {
     handleCurrentChange: function () {
       console.log(this.currentPage);
     },
+    // 刷新
+    async refresh() {
+      try {
+        let res = await this.$http.get("/user");
+        console.log(res);
+        this.tableData = res.data.data;
+      } catch (err) {
+        console.log(err);
+        this.$message.error(
+          "错误码：" +
+            err.response.status +
+            ", 错误信息：" +
+            err.response.data.msg
+        );
+      }
+    },
+    // 表单取消提交
+    cancel() {
+      this.drawer = false;
+      this.form = { username: "", password: "", roleId: "", deptId: "" };
+    },
+    // 表单提交
+    async submit() {
+      try {
+        let res = await this.$http.post("/user", this.form);
+        console.log(res);
+        this.refresh();
+        this.drawer = false;
+      } catch (err) {
+        console.log(err);
+        this.$message.error(
+          "错误码：" +
+            err.response.status +
+            ", 错误信息：" +
+            err.response.data.msg
+        );
+      }
+    },
+    // 删除
+    async deleteOne(row) {
+      try {
+        await this.$http.delete("/user/" + row.id);
+        this.refresh();
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    // 编辑
+    async edit(row) {
+      try {
+        let res = await this.$http.get("/user/" + row.id);
+        this.form = res.data.data;
+        this.drawer = true;
+      } catch (err) {
+        console.log(err);
+        this.$message.error(
+          "错误码：" +
+            err.response.status +
+            ", 错误信息：" +
+            err.response.data.msg
+        );
+      }
+    },
+  },
+  mounted() {
+    this.refresh();
   },
 };
 </script>
@@ -227,5 +327,17 @@ export default {
 
 .collapseLogo {
   margin-left: 5px;
+}
+
+.addUserForm {
+  padding: 2rem;
+}
+
+.buttonGroup {
+  width: 21rem;
+}
+
+.buttonGroup > .el-button {
+  width: 10rem;
 }
 </style>
