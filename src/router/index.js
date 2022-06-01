@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import SysUser from '../views/SysUser.vue'
-import HomeView from "../views/HomeView.vue"
+import SysDept from "../views/SysDept.vue"
 
 Vue.use(VueRouter)
 
@@ -15,6 +15,11 @@ const routes = [
     path: "/user",
     name: "user",
     component: SysUser
+  },
+  {
+    path: "/dept",
+    name: "dept",
+    component: SysDept
   }
 ]
 
