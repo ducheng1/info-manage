@@ -1,11 +1,13 @@
 package cn.edu.wzut.controller;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class JsonResult<T> {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private T data;
     private int code;
     private String msg;
