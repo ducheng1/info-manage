@@ -1,9 +1,13 @@
 package cn.edu.wzut.mbp.entity;
 
 import cn.edu.wzut.mbp.entity.EntityBase;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,5 +32,7 @@ public class SysDept extends EntityBase {
 
     private BigDecimal parentId;
 
-
+    @TableField(exist = false)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private List<SysDept> children;
 }

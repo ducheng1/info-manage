@@ -1,6 +1,7 @@
 package cn.edu.wzut.controller;
 
 import cn.edu.wzut.mbp.entity.SysUser;
+import cn.edu.wzut.mbp.entity.SysUserExtend;
 import cn.edu.wzut.mbp.service.ISysUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +29,9 @@ public class UserController {
     }
 
     @GetMapping
-    public JsonResult<List<SysUser>> getAll() throws Exception {
-        List<SysUser> list = userService.list();
-        return new JsonResult<List<SysUser>>(list);
-//        throw new MyException("自定义异常");
+    public JsonResult<List<SysUserExtend>> getAll() {
+        List<SysUserExtend> userList = userService.getUserList();
+        return new JsonResult<>(userList);
     }
 
     @GetMapping("/{id}")

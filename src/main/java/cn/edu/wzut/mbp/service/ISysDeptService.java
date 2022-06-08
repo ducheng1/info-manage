@@ -3,6 +3,8 @@ package cn.edu.wzut.mbp.service;
 import cn.edu.wzut.mbp.entity.SysDept;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * <p>
  *  服务类
@@ -12,5 +14,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2022-04-27
  */
 public interface ISysDeptService extends IService<SysDept> {
-
+    List<SysDept> listTree();
 }
