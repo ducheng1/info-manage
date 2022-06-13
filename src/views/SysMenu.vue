@@ -1,10 +1,17 @@
 <template>
-  
+    <div id="container">
+        <bread-crumb page-index="menu" page-name="菜单管理"></bread-crumb>
+        menu
+    </div>
 </template>
 
 <script>
-export default {
+import BreadCrumb from "@/components/BreadCrumb";
 
+export default {
+    components: {
+        BreadCrumb
+    }
 }
 </script>
 
