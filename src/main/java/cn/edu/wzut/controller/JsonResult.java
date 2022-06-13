@@ -10,6 +10,7 @@ public class JsonResult<T> {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T data;
     private int code;
+    private int total;
     private String msg;
 
     public JsonResult() {
