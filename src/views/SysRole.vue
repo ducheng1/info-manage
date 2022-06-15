@@ -123,7 +123,7 @@ export default {
                 // console.log(res);
                 this.total = res.data.length;
                 // 数据绑定到表格
-                this.tableData = res.data.slice(10 * (this.pageNum - 1), 10 * this.pageNum);
+                this.tableData = res.data.slice(this.pageSize * (this.pageNum - 1), this.pageSize * this.pageNum);
             })
             this.tableLoading = false;
         },

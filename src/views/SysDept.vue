@@ -54,7 +54,7 @@
                     <el-input type="text" v-model="deptData.deptName"></el-input>
                 </el-form-item>
 
-                <el-form-item label="parent_id">
+                <el-form-item label="节点编号">
                     <el-input type="text" v-model="deptData.parentId"></el-input>
                 </el-form-item>
 

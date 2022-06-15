@@ -1,5 +1,6 @@
 <template>
     <div id="login-div">
+        <div class="title">登录</div>
         <el-form ref="form" :model="form" :rules="rules" label-width="80px">
             <!-- 增加:rules -->
             <el-form-item label="用户名" prop="username">
@@ -48,7 +49,7 @@ export default {
                     params.append("password", this.form.password)
                     const result = await this.$http.post("/user/login", params)
                     localStorage.setItem("token", result.data)
-                    await this.$router.push({path: '/home'})
+                    await this.$router.push({path: '/user'});
                 } else {
                     this.$message.error("用户名或密码错误");
                     console.log('数据录入有误');
@@ -66,11 +67,19 @@ export default {
 <style lang="less" scoped>
 #login-div {
     position: absolute;
-    top: 30%;
+    top: 25%;
     left: 40%;
     padding: 5rem 5rem;
     border-radius: 15px;
     width: 20rem;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.title{
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    font-family: '微软雅黑';
+    padding-bottom: 3rem;
 }
 </style>
